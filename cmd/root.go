@@ -6,6 +6,7 @@ Copyright © 2022 Thomas Stringer <thomas@trstringer.com>
 package cmd
 
 import (
+	"bufio"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
@@ -39,10 +40,20 @@ create JWTs.`,
 			os.Exit(1)
 		}
 
-		privateKey, err := ioutil.ReadFile(privateKeyFile)
-		if err != nil {
-			fmt.Printf("error reading private key file: %v\n", err)
-			os.Exit(1)
+		var privateKey []byte
+		var err error
+		if privateKeyFile == "-" {
+			privateKey, _, err = bufio.NewReader(os.Stdin).ReadLine()
+			if err != nil {
+				fmt.Printf("error reading from stdin: %v\n", err)
+				os.Exit(1)
+			}
+		} else {
+			privateKey, err = ioutil.ReadFile(privateKeyFile)
+			if err != nil {
+				fmt.Printf("error reading private key file: %v\n", err)
+				os.Exit(1)
+			}
 		}
 
 		nowUnix := time.Now().Unix()
