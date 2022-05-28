@@ -1,4 +1,4 @@
-module jwt-creator
+module github.com/trstringer/jwt-creator
 
 go 1.18
 
