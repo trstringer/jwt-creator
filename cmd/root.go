@@ -18,6 +18,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+const (
+	issuedAtBuffer int64 = 10
+)
+
 var (
 	privateKeyFile   string
 	issuedAtNow      bool
@@ -63,7 +67,7 @@ create JWTs.`,
 			standardClaims.ExpiresAt = nowUnix + expiresInSeconds
 		}
 		if issuedAtNow {
-			standardClaims.IssuedAt = nowUnix
+			standardClaims.IssuedAt = nowUnix - issuedAtBuffer
 		}
 
 		standardClaims.Audience = audience
