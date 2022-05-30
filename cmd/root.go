@@ -23,6 +23,7 @@ const (
 
 var (
 	privateKeyFile   string
+	privateKeyStdin  bool
 	issuedAtNow      bool
 	expiresInSeconds int64
 	audience         string
@@ -45,7 +46,7 @@ create JWTs.`,
 
 		var privateKey []byte
 		var err error
-		if privateKeyFile == "-" {
+		if privateKeyFile == "-" || privateKeyStdin {
 			privateKey, err = ioutil.ReadAll(os.Stdin)
 			if err != nil {
 				fmt.Printf("error reading from stdin: %v\n", err)
@@ -95,8 +96,8 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.Flags().StringVarP(&privateKeyFile, "private-key-file", "p", "", "Private key file")
+	rootCmd.Flags().BoolVar(&privateKeyStdin, "private-key-stdin", false, "Pass in the private key through stdin")
 	rootCmd.Flags().BoolVarP(&issuedAtNow, "issued-at-now", "i", false, "Set issued at (iat) to now")
 	rootCmd.Flags().Int64Var(&expiresInSeconds, "expires-in-seconds", 0, "How many seconds the token is valid for")
 	rootCmd.Flags().StringVar(&audience, "audience", "", "Audience claim")
@@ -107,7 +108,7 @@ func init() {
 }
 
 func validateParams() error {
-	if privateKeyFile == "" {
+	if privateKeyFile == "" && !privateKeyStdin {
 		return fmt.Errorf("no private key specified")
 	}
 
