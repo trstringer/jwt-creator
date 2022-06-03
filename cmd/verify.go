@@ -50,6 +50,10 @@ var verifyCmd = &cobra.Command{
 		}
 
 		token, err := jwt.Parse(tokenRaw, func(token *jwt.Token) (interface{}, error) {
+			// Currently this uses public key from the args but the key
+			// can be looked up in a JWKS by the key ID, which can be
+			// stored in the token header: token.Header["kid"]
+
 			block, _ := pem.Decode(publicKey)
 			if block == nil {
 				fmt.Printf("unexpected nil block")

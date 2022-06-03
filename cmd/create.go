@@ -31,6 +31,7 @@ var (
 	issuer           string
 	notBefore        int64
 	subject          string
+	keyID            string
 )
 
 // createCmd represents the create command
@@ -75,7 +76,7 @@ var createCmd = &cobra.Command{
 		standardClaims.NotBefore = notBefore
 		standardClaims.Subject = subject
 
-		token, err := generateJWTFromPrivateKey(standardClaims, privateKey)
+		token, err := generateJWTFromPrivateKey(standardClaims, keyID, privateKey)
 		if err != nil {
 			fmt.Printf("error generating JWT: %v\n", err)
 			os.Exit(1)
@@ -97,6 +98,7 @@ func init() {
 	createCmd.Flags().StringVar(&issuer, "issuer", "", "Issuer claim")
 	createCmd.Flags().Int64Var(&notBefore, "not-before", 0, "Not before claim")
 	createCmd.Flags().StringVar(&subject, "subject", "", "Subject claim")
+	createCmd.Flags().StringVar(&keyID, "key-id", "", "Key ID")
 }
 
 func validateCreateParams() error {
@@ -107,8 +109,11 @@ func validateCreateParams() error {
 	return nil
 }
 
-func generateJWTFromPrivateKey(claims jwt.StandardClaims, privateKey []byte) (string, error) {
+func generateJWTFromPrivateKey(claims jwt.StandardClaims, keyID string, privateKey []byte) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodRS256, claims)
+	if keyID != "" {
+		token.Header["kid"] = keyID
+	}
 
 	decodedPem, _ := pem.Decode(privateKey)
 	if decodedPem == nil {
