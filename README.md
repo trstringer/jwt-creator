@@ -1,6 +1,6 @@
 # jwt-creator
 
-Quickly and easily create a JWT.
+Quickly and easily create and verify JWTs.
 
 ## Installation
 
@@ -8,13 +8,19 @@ Quickly and easily create a JWT.
 $ go install github.com/trstringer/jwt-creator@latest
 ```
 
-## Usage
-
-Create a JWT with a private key:
+## Create a JWT
 
 ```
-$ jwt-creator \
+$ jwt-creator create \
     --private-key-file myprivatekey.pem \
     --issued-at-now --expires-in-seconds 300 \
     --issuer myissuer
+```
+
+## Verify a JWT
+
+```
+$ jwt-creator verify \
+    --public-key-file mypublickey.pem \
+    --token <jwt>
 ```
